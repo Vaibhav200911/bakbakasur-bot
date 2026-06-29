@@ -1,6 +1,8 @@
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram import F
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 import asyncio
 import google.generativeai as genai
 import os
@@ -21,7 +23,10 @@ Rules:
 genai.configure(api_key=os.environ["GEMINI_API_KEY"])
 model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=SYSTEM_PROMPT)
 
-bot = Bot(token=os.environ["BOT_TOKEN"], parse_mode="HTML")
+bot = Bot(
+    token=os.environ["BOT_TOKEN"],
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML)
+)
 dp = Dispatcher()
 chat_history = {}
 
@@ -47,10 +52,10 @@ async def bakbak(message: types.Message):
         if len(chat_history[chat_id]) > 16:
             chat_history[chat_id] = chat_history[chat_id][-16:]
         await message.reply(reply)
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e}")
         await message.reply("Bc thoda ruk, dimag fry ho gaya 🔥")
 
-# Dummy web server for Render
 async def handle(request):
     return web.Response(text="Bakbakasur is alive bc!")
 
